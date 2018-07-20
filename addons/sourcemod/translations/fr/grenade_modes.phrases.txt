@@ -1,0 +1,53 @@
+"Phrases"
+{
+	"TGrenade"
+	{
+		"fr"	"Grenade"
+	}
+	"TMode"
+	{
+		"fr"	"Mode"
+	}
+
+	"TExplosive"
+	{
+		"fr"	"Explosive"
+	}
+	"TFlashbang"
+	{
+		"fr"	"Flashbang"
+	}
+	"TSmoke"
+	{
+		"fr"	"Smoke"
+	}
+	"TDecoy"
+	{
+		"fr"	"Decoy"
+	}
+	"TTactical"
+	{
+		"fr"	"Tactique"
+	}
+	"TIncendiary"
+	{
+		"fr"	"Incendiaire"
+	}
+
+	"TNormal"
+	{
+		"fr"	"Normal"
+	}
+	"TImpact"
+	{
+		"fr"	"Impact"
+	}
+	"TProximity"
+	{
+		"fr"	"Proximité"
+	}
+	"TLasermine"
+	{
+		"fr"	"Lasermine"
+	}
+}
