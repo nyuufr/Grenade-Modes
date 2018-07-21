@@ -4,11 +4,6 @@
 	{
 		"fr"	"Grenade"
 	}
-	"TMode"
-	{
-		"fr"	"Mode"
-	}
-
 	"TExplosive"
 	{
 		"fr"	"Explosive"
@@ -33,7 +28,15 @@
 	{
 		"fr"	"Incendiaire"
 	}
+	"TMolotov"
+	{
+		"fr"	"Molotov"
+	}
 
+	"TMode"
+	{
+		"fr"	"Mode"
+	}
 	"TNormal"
 	{
 		"fr"	"Normal"
@@ -46,8 +49,24 @@
 	{
 		"fr"	"Proximité"
 	}
-	"TLasermine"
+	"TTripwire"
 	{
-		"fr"	"Lasermine"
+		"fr"	"Fil piège"
+	}
+	"TMotionSensor"
+	{
+		"fr"	"Détecteur de mouvement"
+	}
+	"TSatchelCharge"
+	{
+		"fr"	"Charge explosive"
+	}
+	"THoming"
+	{
+		"fr"	"Tête chercheuse"
+	}
+	"TCeilingTrap"
+	{
+		"fr"	"Piège de plafond"
 	}
 }

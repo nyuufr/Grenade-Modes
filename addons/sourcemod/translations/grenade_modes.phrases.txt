@@ -4,11 +4,6 @@
 	{
 		"en"	"Grenade"
 	}
-	"TMode"
-	{
-		"en"	"Mode"
-	}
-
 	"TExplosive"
 	{
 		"en"	"Explosive"
@@ -33,7 +28,15 @@
 	{
 		"en"	"Incendiary"
 	}
+	"TMolotov"
+	{
+		"en"	"Molotov"
+	}
 
+	"TMode"
+	{
+		"en"	"Mode"
+	}
 	"TNormal"
 	{
 		"en"	"Normal"
@@ -46,8 +49,24 @@
 	{
 		"en"	"Proximity"
 	}
-	"TLasermine"
+	"TTripwire"
 	{
-		"en"	"Lasermine"
+		"en"	"Tripwire"
+	}
+	"TMotionSensor"
+	{
+		"en"	"Motion sensor"
+	}
+	"TSatchelCharge"
+	{
+		"en"	"Satchel charge"
+	}
+	"THoming"
+	{
+		"en"	"Homing"
+	}
+	"TCeilingTrap"
+	{
+		"en"	"Ceiling trap"
 	}
 }
