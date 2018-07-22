@@ -28,10 +28,6 @@
 	{
 		"pt"	"Incendiária"
 	}
-	"TMolotov"
-	{
-		"pt"	"Molotov"
-	}
 
 	"TMode"
 	{
@@ -49,13 +45,17 @@
 	{
 		"pt"	"Proximidade"
 	}
+	"TMotionSensor"
+	{
+		"pt"	"Sensor de movimento"
+	}
 	"TTripwire"
 	{
 		"pt"	"Tripwire"
 	}
-	"TMotionSensor"
+	"TCeilingTrap"
 	{
-		"pt"	"Sensor de movimento"
+		"pt"	"Armadilha da teto"
 	}
 	"TSatchelCharge"
 	{
@@ -64,9 +64,5 @@
 	"THoming"
 	{
 		"pt"	"Homing"
-	}
-	"TCeilingTrap"
-	{
-		"pt"	"Armadilha da teto"
 	}
 }

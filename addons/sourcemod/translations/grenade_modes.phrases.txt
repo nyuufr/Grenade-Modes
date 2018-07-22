@@ -28,10 +28,6 @@
 	{
 		"en"	"Incendiary"
 	}
-	"TMolotov"
-	{
-		"en"	"Molotov"
-	}
 
 	"TMode"
 	{
@@ -49,13 +45,17 @@
 	{
 		"en"	"Proximity"
 	}
+	"TMotionSensor"
+	{
+		"en"	"Motion sensor"
+	}
 	"TTripwire"
 	{
 		"en"	"Tripwire"
 	}
-	"TMotionSensor"
+	"TCeilingTrap"
 	{
-		"en"	"Motion sensor"
+		"en"	"Ceiling trap"
 	}
 	"TSatchelCharge"
 	{
@@ -64,9 +64,5 @@
 	"THoming"
 	{
 		"en"	"Homing"
-	}
-	"TCeilingTrap"
-	{
-		"en"	"Ceiling trap"
 	}
 }

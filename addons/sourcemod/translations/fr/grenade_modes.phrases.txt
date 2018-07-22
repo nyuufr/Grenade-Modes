@@ -28,10 +28,6 @@
 	{
 		"fr"	"Incendiaire"
 	}
-	"TMolotov"
-	{
-		"fr"	"Molotov"
-	}
 
 	"TMode"
 	{
@@ -49,13 +45,17 @@
 	{
 		"fr"	"Proximité"
 	}
+	"TMotionSensor"
+	{
+		"fr"	"Détecteur de mouvement"
+	}
 	"TTripwire"
 	{
 		"fr"	"Fil piège"
 	}
-	"TMotionSensor"
+	"TCeilingTrap"
 	{
-		"fr"	"Détecteur de mouvement"
+		"fr"	"Piège de plafond"
 	}
 	"TSatchelCharge"
 	{
@@ -64,9 +64,5 @@
 	"THoming"
 	{
 		"fr"	"Tête chercheuse"
-	}
-	"TCeilingTrap"
-	{
-		"fr"	"Piège de plafond"
 	}
 }
