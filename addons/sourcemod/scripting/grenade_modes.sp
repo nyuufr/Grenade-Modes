@@ -16,51 +16,35 @@
 /* ========================================================================= */
 
 /* Plugin version                                                            */
-#define C_PLUGIN_VERSION                "1.1.2"
+#define C_PLUGIN_VERSION                    "2.0.0"
 
 /* ------------------------------------------------------------------------- */
 
 /* High explosive grenade type                                               */
-#define C_GRENADE_TYPE_HE               (0)
+#define C_GRENADE_TYPE_HE                   (0)
 /* Flashbang grenade type                                                    */
-#define C_GRENADE_TYPE_FLASHBANG        (1)
+#define C_GRENADE_TYPE_FLASHBANG            (1)
 /* Smoke grenade type                                                        */
-#define C_GRENADE_TYPE_SMOKE            (2)
+#define C_GRENADE_TYPE_SMOKE                (2)
 /* Decoy grenade type                                                        */
-#define C_GRENADE_TYPE_DECOY            (3)
+#define C_GRENADE_TYPE_DECOY                (3)
 /* Tactical awareness grenade type                                           */
-#define C_GRENADE_TYPE_TA               (4)
+#define C_GRENADE_TYPE_TA                   (4)
 /* Incendiary (+ molotov) grenade type                                       */
-#define C_GRENADE_TYPE_INCENDIARY       (5)
+#define C_GRENADE_TYPE_INCENDIARY           (5)
 /* Maximum grenade type                                                      */
-#define C_GRENADE_TYPE_MAXIMUM          (6)
+#define C_GRENADE_TYPE_MAXIMUM              (6)
 
 /* Normal grenade mode                                                       */
-#define C_GRENADE_MODE_NORMAL           (0)
+#define C_GRENADE_MODE_NORMAL               (0)
 /* Impact grenade mode                                                       */
-#define C_GRENADE_MODE_IMPACT           (1)
+#define C_GRENADE_MODE_IMPACT               (1)
 /* Proximity grenade mode                                                    */
-#define C_GRENADE_MODE_PROXIMITY        (2)
+#define C_GRENADE_MODE_PROXIMITY            (2)
 /* Tripwire grenade mode                                                     */
-#define C_GRENADE_MODE_TRIPWIRE         (3)
+#define C_GRENADE_MODE_TRIPWIRE             (3)
 /* Maximum grenade mode                                                      */
-#define C_GRENADE_MODE_MAXIMUM          (4)
-
-/* Wait idle proximity state                                                 */
-#define C_PROXIMITY_STATE_WAIT_IDLE     (0)
-/* Powerup proximity state                                                   */
-#define C_PROXIMITY_STATE_POWERUP       (1)
-/* Detect proximity state                                                    */
-#define C_PROXIMITY_STATE_DETECT        (2)
-/* Maximum proximity state                                                   */
-#define C_PROXIMITY_STATE_MAXIMUM       (3)
-
-/* Powerup tripwire state                                                    */
-#define C_TRIPWIRE_STATE_POWERUP        (0)
-/* Detect tripwire state                                                     */
-#define C_TRIPWIRE_STATE_DETECT         (1)
-/* Maximum tripwire state                                                    */
-#define C_TRIPWIRE_STATE_MAXIMUM        (2)
+#define C_GRENADE_MODE_MAXIMUM              (4)
 
 /* ========================================================================= */
 /* GLOBAL CONSTANTS                                                          */
@@ -71,7 +55,7 @@ public Plugin myinfo =
 {
     name        = "Grenade Modes",
     author      = "Nyuu",
-    description = "Provide new modes for the grenades",
+    description = "Add new custom modes for the grenades",
     version     = C_PLUGIN_VERSION,
     url         = "https://forums.alliedmods.net/showthread.php?t=309154"
 }
@@ -86,7 +70,7 @@ char gl_szGrenadeTypeNameTr[C_GRENADE_TYPE_MAXIMUM][] =
     "TSmoke",     // SMOKE
     "TDecoy",     // DECOY
     "TTactical",  // TA
-    "TIncendiary" // INCENDIARY + MOLOTOV
+    "TIncendiary" // INCENDIARY (+ MOLOTOV)
 };
 
 /* Grenade mode names (Translation)                                          */
@@ -101,12 +85,12 @@ char gl_szGrenadeModeNameTr[C_GRENADE_MODE_MAXIMUM][] =
 /* Grenade mode limits                                                       */
 int gl_iGrenadeModeLimits[C_GRENADE_TYPE_MAXIMUM] = 
 {
-    C_GRENADE_MODE_MAXIMUM,   // HE
-    C_GRENADE_MODE_MAXIMUM,   // FLASHBANG
-    C_GRENADE_MODE_MAXIMUM,   // SMOKE
-    C_GRENADE_MODE_IMPACT,    // DECOY
-    C_GRENADE_MODE_IMPACT,    // TA
-    C_GRENADE_MODE_PROXIMITY  // INCENDIARY + MOLOTOV
+    C_GRENADE_MODE_MAXIMUM, // HE
+    C_GRENADE_MODE_MAXIMUM, // FLASHBANG
+    C_GRENADE_MODE_MAXIMUM, // SMOKE
+    C_GRENADE_MODE_MAXIMUM, // DECOY
+    C_GRENADE_MODE_IMPACT,  // TA
+    C_GRENADE_MODE_MAXIMUM  // INCENDIARY (+ MOLOTOV)
 };
 
 /* ========================================================================= */
@@ -127,9 +111,9 @@ int       gl_nSpriteBeam;
 int       gl_nSpriteHalo;
 
 /* Grenade weapon name stringmap                                             */
-StringMap gl_hGrenadeWeaponName;
+StringMap gl_hMapGrenadeWeaponName;
 /* Grenade projectile name stringmap                                         */
-StringMap gl_hGrenadeProjectileName;
+StringMap gl_hMapGrenadeProjectileName;
 
 /* ------------------------------------------------------------------------- */
 
@@ -184,44 +168,45 @@ public void OnPluginStart()
     LoadTranslations("grenade_modes.phrases");
     
     // Prepare the grenade weapon name stringmap
-    gl_hGrenadeWeaponName = new StringMap();
-    gl_hGrenadeWeaponName.SetValue("weapon_hegrenade",    C_GRENADE_TYPE_HE);
-    gl_hGrenadeWeaponName.SetValue("weapon_flashbang",    C_GRENADE_TYPE_FLASHBANG);
-    gl_hGrenadeWeaponName.SetValue("weapon_smokegrenade", C_GRENADE_TYPE_SMOKE);
-    gl_hGrenadeWeaponName.SetValue("weapon_decoy",        C_GRENADE_TYPE_DECOY);
-    gl_hGrenadeWeaponName.SetValue("weapon_tagrenade",    C_GRENADE_TYPE_TA);
-    gl_hGrenadeWeaponName.SetValue("weapon_incgrenade",   C_GRENADE_TYPE_INCENDIARY);
-    gl_hGrenadeWeaponName.SetValue("weapon_molotov",      C_GRENADE_TYPE_INCENDIARY);
+    gl_hMapGrenadeWeaponName = new StringMap();
+    gl_hMapGrenadeWeaponName.SetValue("weapon_hegrenade",    C_GRENADE_TYPE_HE);
+    gl_hMapGrenadeWeaponName.SetValue("weapon_flashbang",    C_GRENADE_TYPE_FLASHBANG);
+    gl_hMapGrenadeWeaponName.SetValue("weapon_smokegrenade", C_GRENADE_TYPE_SMOKE);
+    gl_hMapGrenadeWeaponName.SetValue("weapon_decoy",        C_GRENADE_TYPE_DECOY);
+    gl_hMapGrenadeWeaponName.SetValue("weapon_tagrenade",    C_GRENADE_TYPE_TA);
+    gl_hMapGrenadeWeaponName.SetValue("weapon_incgrenade",   C_GRENADE_TYPE_INCENDIARY);
+    gl_hMapGrenadeWeaponName.SetValue("weapon_molotov",      C_GRENADE_TYPE_INCENDIARY);
     
     // Prepare the grenade projectile name stringmap
-    gl_hGrenadeProjectileName = new StringMap();
-    gl_hGrenadeProjectileName.SetValue("hegrenade_projectile",    C_GRENADE_TYPE_HE);
-    gl_hGrenadeProjectileName.SetValue("flashbang_projectile",    C_GRENADE_TYPE_FLASHBANG);
-    gl_hGrenadeProjectileName.SetValue("smokegrenade_projectile", C_GRENADE_TYPE_SMOKE);
-    gl_hGrenadeProjectileName.SetValue("decoy_projectile",        C_GRENADE_TYPE_DECOY);
-    gl_hGrenadeProjectileName.SetValue("tagrenade_projectile",    C_GRENADE_TYPE_TA);
-    gl_hGrenadeProjectileName.SetValue("molotov_projectile",      C_GRENADE_TYPE_INCENDIARY);
+    gl_hMapGrenadeProjectileName = new StringMap();
+    gl_hMapGrenadeProjectileName.SetValue("hegrenade_projectile",    C_GRENADE_TYPE_HE);
+    gl_hMapGrenadeProjectileName.SetValue("flashbang_projectile",    C_GRENADE_TYPE_FLASHBANG);
+    gl_hMapGrenadeProjectileName.SetValue("smokegrenade_projectile", C_GRENADE_TYPE_SMOKE);
+    gl_hMapGrenadeProjectileName.SetValue("decoy_projectile",        C_GRENADE_TYPE_DECOY);
+    gl_hMapGrenadeProjectileName.SetValue("tagrenade_projectile",    C_GRENADE_TYPE_TA);
+    gl_hMapGrenadeProjectileName.SetValue("molotov_projectile",      C_GRENADE_TYPE_INCENDIARY);
     
     // Hook the player command +lookatweapon
     AddCommandListener(OnPlayerLookAtWeapon, "+lookatweapon");
     
-    // Check for plugin late loading
-    if (gl_bPluginLateLoading)
-    {
-        PluginStartLate();
-    }
+    // Manage late loading
+    PluginStartLate();
 }
 
 void PluginStartLate()
 {
-    // Process the players already on the server
-    for (int iPlayer = 1 ; iPlayer <= MaxClients ; iPlayer++)
+    // Check if the plugin has been loaded late
+    if (gl_bPluginLateLoading)
     {
-        // Check if the player is connected
-        if (IsClientConnected(iPlayer))
+        // Process the players already on the server
+        for (int iPlayer = 1 ; iPlayer <= MaxClients ; iPlayer++)
         {
-            // Call the client connected forward
-            OnClientConnected(iPlayer);
+            // Check if the player is connected
+            if (IsClientConnected(iPlayer))
+            {
+                // Call the client connected forward
+                OnClientConnected(iPlayer);
+            }
         }
     }
 }
@@ -293,13 +278,11 @@ public void OnCvarChanged(ConVar hCvar, const char[] szOldValue, const char[] sz
 
 public void OnClientConnected(int iClient)
 {
-    // Initialize the client data
-    gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_HE]         = C_GRENADE_MODE_NORMAL;
-    gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_FLASHBANG]  = C_GRENADE_MODE_NORMAL;
-    gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_SMOKE]      = C_GRENADE_MODE_NORMAL;
-    gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_DECOY]      = C_GRENADE_MODE_NORMAL;
-    gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_TA]         = C_GRENADE_MODE_NORMAL;
-    gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_INCENDIARY] = C_GRENADE_MODE_NORMAL;
+    // Reset the mode of all the grenade types
+    for (int iGrenadeType = 0 ; iGrenadeType < C_GRENADE_TYPE_MAXIMUM ; iGrenadeType++)
+    {
+        gl_iPlayerGrenadeMode[iClient][iGrenadeType] = C_GRENADE_MODE_NORMAL;
+    }
 }
 
 /* ------------------------------------------------------------------------- */
@@ -311,7 +294,7 @@ public Action OnPlayerLookAtWeapon(int iPlayer, const char[] szCommand, int iArg
     // Check if the plugin is enabled
     if (gl_bCvarPluginEnable)
     {
-        // Check if the player is in game and alive
+        // Check if the player is alive
         if (IsClientInGame(iPlayer) && IsPlayerAlive(iPlayer))
         {
             char szClassname[32];
@@ -320,13 +303,13 @@ public Action OnPlayerLookAtWeapon(int iPlayer, const char[] szCommand, int iArg
             // Get the player weapon
             GetClientWeapon(iPlayer, szClassname, sizeof(szClassname));
             
-            // Check if the weapon is a grenade
-            if (gl_hGrenadeWeaponName.GetValue(szClassname, iGrenadeType))
+            // Check if the player weapon is a grenade
+            if (gl_hMapGrenadeWeaponName.GetValue(szClassname, iGrenadeType))
             {
                 // Cache the grenade mode
                 int iGrenadeMode = gl_iPlayerGrenadeMode[iPlayer][iGrenadeType];
                 
-                // Go to the next grenade mode
+                // @TODO: Search the next grenade mode available using cvars
                 iGrenadeMode = (iGrenadeMode + 1) % gl_iGrenadeModeLimits[iGrenadeType];
                 
                 // Set the grenade mode
@@ -344,6 +327,23 @@ public Action OnPlayerLookAtWeapon(int iPlayer, const char[] szCommand, int iArg
     return Plugin_Continue;
 }
 
+int PlayerGetEffectColor(int iPlayer, int iOther, int iOtherTeam)
+{
+    // Check if the player sees his own effect
+    if (iPlayer == iOther)
+    {
+        return gl_iCvarEffectsSelfColor;
+    }
+    // Check if the player sees the effect of a teammate
+    else if (GetClientTeam(iPlayer) == iOtherTeam)
+    {
+        return gl_iCvarEffectsTeammateColor;
+    }
+    
+    // The player sees the effect of an enemy
+    return gl_iCvarEffectsEnemyColor;
+}
+
 /* ------------------------------------------------------------------------- */
 /* Entity                                                                    */
 /* ------------------------------------------------------------------------- */
@@ -356,7 +356,7 @@ public void OnEntityCreated(int iEntity, const char[] szClassname)
     if (gl_bCvarPluginEnable)
     {
         // Check if the entity created is a grenade projectile
-        if (gl_hGrenadeProjectileName.GetValue(szClassname, iGrenadeType))
+        if (gl_hMapGrenadeProjectileName.GetValue(szClassname, iGrenadeType))
         {
             // Hook the grenade spawn function
             SDKHook(iEntity, SDKHook_SpawnPost, OnGrenadeSpawnPost);
@@ -370,6 +370,131 @@ public void OnEntityCreated(int iEntity, const char[] szClassname)
 
 public void OnGrenadeSpawnPost(int iGrenade)
 {
+    // Request the next frame
+    RequestFrame(OnGrenadeSpawnPostNextFrame, EntIndexToEntRef(iGrenade));
+}
+
+public void OnGrenadeSpawnPostNextFrame(int iGrenadeReference)
+{
+    // Get the grenade index
+    int iGrenade = EntRefToEntIndex(iGrenadeReference);
+    
+    // Check if the grenade is still valid
+    if (iGrenade != INVALID_ENT_REFERENCE)
+    {
+        char szClassname[32];
+        int  iGrenadeType;
+        
+        // Get the grenade classname
+        GetEdictClassname(iGrenade, szClassname, sizeof(szClassname));
+        
+        // Get the grenade type
+        if (gl_hMapGrenadeProjectileName.GetValue(szClassname, iGrenadeType))
+        {
+            // Get the grenade owner
+            int iGrenadeOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
+            
+            // Check if the owner is in game
+            if ((1 <= iGrenadeOwner <= MaxClients) && IsClientInGame(iGrenadeOwner))
+            {
+                // Switch on the player grenade mode
+                switch (gl_iPlayerGrenadeMode[iGrenadeOwner][iGrenadeType])
+                {
+                    case C_GRENADE_MODE_NORMAL:
+                    {
+                        // Nothing to do
+                    }
+                    case C_GRENADE_MODE_IMPACT:
+                    {
+                        // Set the grenade as infinite
+                        SetEntProp(iGrenade, Prop_Data, "m_nNextThinkTick", -1);
+                        
+                        // Hook the grenade touch function
+                        SDKHook(iGrenade, SDKHook_Touch, OnGrenadeImpactTouch);
+                    }
+                    case C_GRENADE_MODE_PROXIMITY:
+                    {
+                        DataPack hGrenadePack;
+                        
+                        // Set the grenade as infinite
+                        SetEntProp(iGrenade, Prop_Data, "m_nNextThinkTick", -1);
+                        
+                        // Hook the grenade touch function
+                        SDKHook(iGrenade, SDKHook_Touch, OnGrenadeTouchBlock);
+                        
+                        // Start the grenade think function
+                        CreateDataTimer(0.1, OnGrenadeThink, hGrenadePack, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+                        
+                        // Prepare the datapack
+                        // ------------------------------
+                        // int iGrenadeReference
+                        // int hGrenadeThinkFunction
+                        // ------------------------------
+                        // int iGrenadeCounter
+                        // ------------------------------
+                        hGrenadePack.WriteCell(EntIndexToEntRef(iGrenade));
+                        hGrenadePack.WriteFunction(OnGrenadeProximityThink__WaitIdle);
+                        hGrenadePack.WriteCell(0);
+                    }
+                    case C_GRENADE_MODE_TRIPWIRE:
+                    {
+                        // Set the grenade as infinite
+                        SetEntProp(iGrenade, Prop_Data, "m_nNextThinkTick", -1);
+                        
+                        // Hook the grenade touch function
+                        SDKHook(iGrenade, SDKHook_Touch, OnGrenadeTouchBlock);
+                        
+                        // Hook the grenade touch function
+                        SDKHook(iGrenade, SDKHook_Touch, OnGrenadeTripwireTouch);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Grenade :: Common                                                         */
+/* ------------------------------------------------------------------------- */
+
+void GrenadeSetBreakable(int iGrenade, int iHealth)
+{
+    // Set the grenade as breakable
+    SetEntProp(iGrenade, Prop_Data, "m_takedamage", 2);
+    SetEntProp(iGrenade, Prop_Data, "m_iHealth", iHealth);
+}
+
+bool GrenadeCheckTouch(int iGrenade, int iOther, bool bCheckPlayers)
+{
+    // Check if the grenade touches the world / sky
+    if (iOther <= 0)
+    {
+        return true;
+    }
+    // Check if the grenade touches a player 
+    else if (1 <= iOther <= MaxClients)
+    {
+        // Check if the players must be checked
+        if (bCheckPlayers)
+        {
+            // Check if the touched player isn't the grenade owner
+            if (GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity") != iOther)
+            {
+                return true;
+            }
+        }
+    }
+    // Check if the grenade touches a solid entity
+    else if (GetEntProp(iOther, Prop_Send, "m_nSolidType", 1) && !(GetEntProp(iOther, Prop_Send, "m_usSolidFlags", 2) & 0x0004))
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+void GrenadeDetonate(int iGrenade)
+{
     char szClassname[32];
     int  iGrenadeType;
     
@@ -377,72 +502,56 @@ public void OnGrenadeSpawnPost(int iGrenade)
     GetEdictClassname(iGrenade, szClassname, sizeof(szClassname));
     
     // Get the grenade type
-    if (gl_hGrenadeProjectileName.GetValue(szClassname, iGrenadeType))
+    if (gl_hMapGrenadeProjectileName.GetValue(szClassname, iGrenadeType))
     {
-        // Get the grenade owner
-        int iOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
-        
-        // Check if the owner is connected
-        if (1 <= iOwner <= MaxClients)
+        // Switch on the grenade type
+        switch (iGrenadeType)
         {
-            // Switch on the player grenade mode
-            switch (gl_iPlayerGrenadeMode[iOwner][iGrenadeType])
+            case C_GRENADE_TYPE_HE, C_GRENADE_TYPE_FLASHBANG, C_GRENADE_TYPE_INCENDIARY:
             {
-                case C_GRENADE_MODE_NORMAL:
-                {
-                    // Nothing to do
-                }
-                case C_GRENADE_MODE_IMPACT:
-                {
-                    // Set the grenade as infinite
-                    CreateTimer(0.1, OnGrenadeTimerSetInfinite, EntIndexToEntRef(iGrenade), TIMER_FLAG_NO_MAPCHANGE);
-                    
-                    // Hook the grenade touch function
-                    SDKHook(iGrenade, SDKHook_TouchPost, OnGrenadeImpactTouchPost);
-                }
-                case C_GRENADE_MODE_PROXIMITY:
-                {
-                    DataPack hPack;
-                    
-                    // Set the grenade as infinite
-                    CreateTimer(0.1, OnGrenadeTimerSetInfinite, EntIndexToEntRef(iGrenade), TIMER_FLAG_NO_MAPCHANGE);
-                    
-                    // Set the grenade think function
-                    CreateDataTimer(0.1, OnGrenadeProximityTimerThink, hPack, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-                    
-                    // Prepare the datapack
-                    // -------------------------
-                    // int iGrenadeReference
-                    // int iGrenadeState
-                    // int iGrenadeCounter
-                    hPack.WriteCell(EntIndexToEntRef(iGrenade));
-                    hPack.WriteCell(C_PROXIMITY_STATE_WAIT_IDLE);
-                    hPack.WriteCell(0);
-                }
-                case C_GRENADE_MODE_TRIPWIRE:
-                {
-                    // Set the grenade as infinite
-                    CreateTimer(0.1, OnGrenadeTimerSetInfinite, EntIndexToEntRef(iGrenade), TIMER_FLAG_NO_MAPCHANGE);
-                    
-                    // Hook the grenade touch function
-                    SDKHook(iGrenade, SDKHook_TouchPost, OnGrenadeTripwireTouchPost);
-                }
+                // Set the grenade as breakable
+                GrenadeSetBreakable(iGrenade, 1);
+                
+                // Detonate the grenade
+                SDKHooks_TakeDamage(iGrenade, iGrenade, iGrenade, 100.0);
+            }
+            case C_GRENADE_TYPE_SMOKE, C_GRENADE_TYPE_DECOY:
+            {
+                float vGrenadeVelocity[3] = {0.0, 0.0, 0.0};
+                
+                // Stop the grenade velocity
+                TeleportEntity(iGrenade, NULL_VECTOR, NULL_VECTOR, vGrenadeVelocity);
+                
+                // Detonate the grenade in the next tick
+                SetEntProp(iGrenade, Prop_Data, "m_nNextThinkTick", 1);
+            }
+            case C_GRENADE_TYPE_TA:
+            {
+                // @TODO - Call SDKTouch ?
             }
         }
     }
 }
 
-// @TODO: It shouldn't work with an enemy smokegrenade.
-public Action OnGrenadeTakeDamage(int iGrenade, int &iAttacker, int &iInflictor, float &flDamage, int &iDamagetype)
+/* ------------------------------------------------------------------------- */
+
+public Action OnGrenadeTouchBlock(int iGrenade, int iOther)
+{
+    // Don't continue touch
+    return Plugin_Handled;
+}
+
+// @TODO: It shouldn't work with an enemy smokegrenade / decoy
+public Action OnGrenadeTakeDamageBlock(int iGrenade, int &iAttacker, int &iInflictor, float &flDamage, int &iDamagetype)
 {
     // Check if the attacker is a player
     if (1 <= iAttacker <= MaxClients)
     {
         // Get the grenade owner
-        int iOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
+        int iGrenadeOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
         
         // Check if the owner is still connected and in the same team than the attacker
-        if ((1 <= iOwner <= MaxClients) && (GetClientTeam(iAttacker) == GetClientTeam(iOwner)))
+        if ((1 <= iGrenadeOwner <= MaxClients) && (GetClientTeam(iAttacker) == GetClientTeam(iGrenadeOwner)))
         {
             // Don't do damage
             return Plugin_Handled;
@@ -452,115 +561,51 @@ public Action OnGrenadeTakeDamage(int iGrenade, int &iAttacker, int &iInflictor,
     return Plugin_Continue;
 }
 
-/* ------------------------------------------------------------------------- */
-/* Grenade :: Common                                                         */
-/* ------------------------------------------------------------------------- */
-
-static void GrenadeSetBreakable(int iGrenade)
+public bool OnGrenadeTraceFilter(int iEntity, int iContentsMask, any iData)
 {
-    // Set the grenade as breakable
-    SetEntProp(iGrenade, Prop_Data, "m_takedamage", 2);
-    SetEntProp(iGrenade, Prop_Data, "m_iHealth", 1);
+    return (iEntity == view_as<int>(iData)) ? false : true;
 }
 
-static void GrenadeDetonate(int iGrenade)
+public bool OnGrenadeTraceFilterNoPlayer(int iEntity, int iContentsMask, any iData)
 {
-    char szClassname[32];
-    
-    // Get the grenade classname
-    GetEdictClassname(iGrenade, szClassname, sizeof(szClassname));
-    
-    // Check if the grenade is a smoke
-    if (StrEqual(szClassname, "smokegrenade_projectile"))
-    {
-        float vGrenadeVelocity[3] = {0.0, 0.0, 0.0};
-        
-        // Stop the grenade velocity
-        TeleportEntity(iGrenade, NULL_VECTOR, NULL_VECTOR, vGrenadeVelocity);
-        
-        // Explode in the next tick
-        SetEntProp(iGrenade, Prop_Data, "m_nNextThinkTick", 1);
-    }
-    else
-    {
-        // Set the grenade as breakable
-        GrenadeSetBreakable(iGrenade);
-        
-        // Inflict damage
-        SDKHooks_TakeDamage(iGrenade, iGrenade, iGrenade, 10.0);
-    }
-}
-
-public Action OnGrenadeTimerSetInfinite(Handle hTimer, int iReference)
-{
-    // Get the grenade index
-    int iGrenade = EntRefToEntIndex(iReference);
-    
-    // Check if the grenade is still valid
-    if (iGrenade != INVALID_ENT_REFERENCE)
-    {
-        // Set the grenade as infinite
-        SetEntProp(iGrenade, Prop_Data, "m_nNextThinkTick", -1);
-    }
-    
-    return Plugin_Continue;
-}
-
-public Action OnGrenadeTimerDetonate(Handle hTimer, int iReference)
-{
-    // Get the grenade index
-    int iGrenade = EntRefToEntIndex(iReference);
-    
-    // Check if the grenade is still valid
-    if (iGrenade != INVALID_ENT_REFERENCE)
-    {
-        // Detonate the grenade
-        GrenadeDetonate(iGrenade);
-    }
-    
-    return Plugin_Continue;
+    return ((iEntity == view_as<int>(iData)) || (1 <= iEntity <= MaxClients)) ? false : true;
 }
 
 /* ------------------------------------------------------------------------- */
 /* Grenade :: Impact                                                         */
 /* ------------------------------------------------------------------------- */
 
-public void OnGrenadeImpactTouchPost(int iGrenade, int iOther)
+public Action OnGrenadeImpactTouch(int iGrenade, int iOther)
 {
-    // Check if the grenade touches the world
-    if (!iOther)
+    // Check if the grenade touches something
+    if (GrenadeCheckTouch(iGrenade, iOther, true))
     {
         // Detonate the grenade
         GrenadeDetonate(iGrenade);
+        
+        // Don't continue touch
+        return Plugin_Handled;
     }
-    else
-    {
-        // Check if the grenade touches a solid entity
-        if (GetEntProp(iOther, Prop_Send, "m_nSolidType", 1) && !(GetEntProp(iOther, Prop_Send, "m_usSolidFlags", 2) & 0x0004))
-        {
-            // Get the grenade owner
-            int iOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
-            
-            // Check if it's not the owner
-            if (iOwner != iOther)
-            {
-                // Detonate the grenade
-                GrenadeDetonate(iGrenade);
-            }
-        }
-    }
+    
+    return Plugin_Continue;
 }
 
 /* ------------------------------------------------------------------------- */
 /* Grenade :: Proximity                                                      */
 /* ------------------------------------------------------------------------- */
 
-stock Action GrenadeProximityThinkWaitIdle(int  iGrenade, 
-                                           int  iGrenadeReference, 
-                                           int &rGrenadeState, 
-                                           int &rGrenadeCounter)
+public Action OnGrenadeProximityThink__WaitIdle(int iGrenade, DataPack hGrenadePack)
 {
-    static float vGrenadeVelocity[3];
+    static int      iGrenadeReference;
+    static Function hGrenadeThinkFunction;
+    static int      iGrenadeCounter;
+    static float    vGrenadeVelocity[3];
+    
+    // Read the datapack
+    ResetPack(hGrenadePack);
+    iGrenadeReference     = hGrenadePack.ReadCell();
+    hGrenadeThinkFunction = hGrenadePack.ReadFunction();
+    iGrenadeCounter       = hGrenadePack.ReadCell();
     
     // Get the grenade velocity
     GetEntPropVector(iGrenade, Prop_Data, "m_vecVelocity", vGrenadeVelocity);
@@ -568,116 +613,132 @@ stock Action GrenadeProximityThinkWaitIdle(int  iGrenade,
     // Check if the grenade is stationary
     if (GetVectorLength(vGrenadeVelocity) <= 0.0)
     {
-        float vGrenadeOrigin[3];
-        
-        // Get the grenade origin
-        GetEntPropVector(iGrenade, Prop_Send, "m_vecOrigin", vGrenadeOrigin);
-        
         // Set the grenade as breakable
-        GrenadeSetBreakable(iGrenade);
+        GrenadeSetBreakable(iGrenade, 10);
         
         // Hook the grenade takedamage function
-        SDKHook(iGrenade, SDKHook_OnTakeDamage, OnGrenadeTakeDamage);
+        SDKHook(iGrenade, SDKHook_OnTakeDamage, OnGrenadeTakeDamageBlock);
         
-        // Set the grenade next state
-        rGrenadeState   = C_PROXIMITY_STATE_POWERUP;
-        rGrenadeCounter = RoundFloat(gl_flCvarProximityPowerupTime * 10.0);
+        // Set the grenade think function
+        hGrenadeThinkFunction = OnGrenadeProximityThink__Powerup;
+        
+        // Set the grenade counter
+        iGrenadeCounter = RoundFloat(gl_flCvarProximityPowerupTime * 10.0);
     }
     
+    // Write the datapack
+    ResetPack(hGrenadePack);
+    hGrenadePack.WriteCell(iGrenadeReference);
+    hGrenadePack.WriteFunction(hGrenadeThinkFunction);
+    hGrenadePack.WriteCell(iGrenadeCounter);
+    
+    // Continue the timer
     return Plugin_Continue;
 }
 
-stock Action GrenadeProximityThinkPowerUp(int  iGrenade, 
-                                          int  iGrenadeReference, 
-                                          int &rGrenadeState, 
-                                          int &rGrenadeCounter)
+public Action OnGrenadeProximityThink__Powerup(int iGrenade, DataPack hGrenadePack)
 {
-    // Check if the grenade is ready
-    if (rGrenadeCounter <= 0)
+    static int      iGrenadeReference;
+    static Function hGrenadeThinkFunction;
+    static int      iGrenadeCounter;
+    
+    // Read the datapack
+    ResetPack(hGrenadePack);
+    iGrenadeReference     = hGrenadePack.ReadCell();
+    hGrenadeThinkFunction = hGrenadePack.ReadFunction();
+    iGrenadeCounter       = hGrenadePack.ReadCell();
+    
+    // Decrement the grenade counter
+    iGrenadeCounter--;
+    
+    // Check if the grenade is operational
+    if (iGrenadeCounter <= 0)
     {
         // Play a sound
-        EmitSoundToAll("buttons/blip2.wav", iGrenade, _, SNDLEVEL_CONVO);
+        EmitSoundToAll("buttons/blip2.wav", iGrenade, _, SNDLEVEL_CONVO, _, 0.9);
         
-        // Set the grenade next state
-        rGrenadeState   = C_PROXIMITY_STATE_DETECT;
-        rGrenadeCounter = 0;
+        // Set the grenade think function
+        hGrenadeThinkFunction = OnGrenadeProximityThink__Operational;
     }
-    else if ((rGrenadeCounter % 2) == 0)
+    else if ((iGrenadeCounter % 2) == 0)
     {
-        // Determine the pitch
-        int iPitch = 200 - rGrenadeCounter * 4;
-        
-        if (iPitch <= 100)
-        {
-            iPitch = 100;
-        }
-        
         // Play a sound
-        EmitSoundToAll("buttons/blip1.wav", iGrenade, _, SNDLEVEL_CONVO, _, _, iPitch);
+        EmitSoundToAll("buttons/blip1.wav", iGrenade, _, SNDLEVEL_CONVO, _, 0.9);
     }
     
+    // Write the datapack
+    ResetPack(hGrenadePack);
+    hGrenadePack.WriteCell(iGrenadeReference);
+    hGrenadePack.WriteFunction(hGrenadeThinkFunction);
+    hGrenadePack.WriteCell(iGrenadeCounter);
+    
+    // Continue the timer
     return Plugin_Continue;
 }
 
-stock Action GrenadeProximityThinkDetect(int  iGrenade, 
-                                         int  iGrenadeReference, 
-                                         int &rGrenadeState, 
-                                         int &rGrenadeCounter)
+public Action OnGrenadeProximityThink__Operational(int iGrenade, DataPack hGrenadePack)
 {
-    static int iOwner;
+    static int      iGrenadeReference;
+    static Function hGrenadeThinkFunction;
+    static int      iGrenadeCounter;
+    static int      iGrenadeOwner;
+    
+    // Read the datapack
+    ResetPack(hGrenadePack);
+    iGrenadeReference     = hGrenadePack.ReadCell();
+    hGrenadeThinkFunction = hGrenadePack.ReadFunction();
+    iGrenadeCounter       = hGrenadePack.ReadCell();
     
     // Get the grenade owner
-    iOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
+    iGrenadeOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
     
-    // Check if the owner is still connected
-    if (1 <= iOwner <= MaxClients)
+    // Check if the owner is in game
+    if ((1 <= iGrenadeOwner <= MaxClients) && IsClientInGame(iGrenadeOwner))
     {
-        static int   iOwnerTeam;
+        static int   iGrenadeTeam;
         static float vGrenadeOrigin[3];
         static float vPlayerOrigin[3];
         static int   iPlayer;
-        static bool  bDetonate;
         
-        // Get the owner team
-        iOwnerTeam = GetClientTeam(iOwner);
+        // Get the grenade team
+        iGrenadeTeam = GetClientTeam(iGrenadeOwner);
         
         // Get the grenade origin
         GetEntPropVector(iGrenade, Prop_Send, "m_vecOrigin", vGrenadeOrigin);
         
-        // Initialize the context
-        iPlayer   = -1;
-        bDetonate = false;
+        // Prepare the player index
+        iPlayer = -1;
         
         // Check if there's a valid player near the grenade
-        while (((iPlayer = FindEntityByClassname(iPlayer, "player")) != -1) && !bDetonate)
+        while ((iPlayer = FindEntityByClassname(iPlayer, "player")) != -1)
         {
-            if ((1 <= iPlayer <= MaxClients) && (IsPlayerAlive(iPlayer)) && (GetClientTeam(iPlayer) != iOwnerTeam))
+            if ((1 <= iPlayer <= MaxClients) && (IsPlayerAlive(iPlayer)) && (GetClientTeam(iPlayer) != iGrenadeTeam))
             {
                 GetEntPropVector(iPlayer, Prop_Send, "m_vecOrigin", vPlayerOrigin);
                 
                 if (GetVectorDistance(vGrenadeOrigin, vPlayerOrigin) <= 100.0)
                 {
-                    bDetonate = true;
+                    // Detonate the grenade
+                    GrenadeDetonate(iGrenade);
+                    
+                    // Stop the timer
+                    return Plugin_Stop;
                 }
             }
         }
         
-        // Check if the grenade must detonate
-        if (bDetonate)
-        {
-            CreateTimer(0.1, OnGrenadeTimerDetonate, iGrenadeReference, TIMER_FLAG_NO_MAPCHANGE);
-            return Plugin_Stop;
-        }
+        // Decrement the grenade counter
+        iGrenadeCounter--;
         
-        // Warn the players
-        if (rGrenadeCounter <= 0)
+        // Check if the players must be warned
+        if (iGrenadeCounter <= 0)
         {
             static int iPlayers[MAXPLAYERS + 1];
             static int iNbPlayers;
             static int iNumPlayer;
             static int iColor;
             
-            // Just above the ground..
+            // Move the grenade origin above the ground
             vGrenadeOrigin[2] += 2;
             
             // Get all the players in range
@@ -686,21 +747,11 @@ stock Action GrenadeProximityThinkDetect(int  iGrenade,
             // Send the beacon effect to all the close players
             for (iNumPlayer = 0 ; iNumPlayer < iNbPlayers ; iNumPlayer++)
             {
+                // Cache the player index
                 iPlayer = iPlayers[iNumPlayer];
                 
-                // Determine the color of the beacon
-                if (iPlayer == iOwner)
-                {
-                    iColor = gl_iCvarEffectsSelfColor;
-                }
-                else if (GetClientTeam(iPlayer) == iOwnerTeam)
-                {
-                    iColor = gl_iCvarEffectsTeammateColor;
-                }
-                else
-                {
-                    iColor = gl_iCvarEffectsEnemyColor;
-                }
+                // Get the effect color
+                iColor = PlayerGetEffectColor(iPlayer, iGrenadeOwner, iGrenadeTeam);
                 
                 // Prepare the beacon effect
                 TE_Start      ("BeamRingPoint");
@@ -724,275 +775,222 @@ stock Action GrenadeProximityThinkDetect(int  iGrenade,
                 TE_SendToClient(iPlayer);
             }
             
-            rGrenadeCounter = 10; // 1.0 sec
+            // Set the grenade counter
+            iGrenadeCounter = 10;
         }
     }
     else
     {
-        // Detonate the grenade
-        CreateTimer(GetRandomFloat(0.5, 2.0), OnGrenadeTimerDetonate, iGrenadeReference, TIMER_FLAG_NO_MAPCHANGE);
+        // Kill the grenade
+        AcceptEntityInput(iGrenade, "kill");
+        
+        // Stop the timer
         return Plugin_Stop;
     }
     
+    // Write the datapack
+    ResetPack(hGrenadePack);
+    hGrenadePack.WriteCell(iGrenadeReference);
+    hGrenadePack.WriteFunction(hGrenadeThinkFunction);
+    hGrenadePack.WriteCell(iGrenadeCounter);
+    
+    // Continue the timer
     return Plugin_Continue;
-}
-
-public Action OnGrenadeProximityTimerThink(Handle hTimer, DataPack hPack)
-{
-    static int    iGrenadeReference;
-    static int    iGrenade;
-    static int    iGrenadeState;
-    static int    iGrenadeCounter;
-    static Action iTimerAction;
-    
-    // Read the datapack
-    ResetPack(hPack);
-    iGrenadeReference = hPack.ReadCell();
-    iGrenade          = EntRefToEntIndex(iGrenadeReference);
-    iGrenadeState     = hPack.ReadCell();
-    iGrenadeCounter   = hPack.ReadCell();
-    
-    // By default, exit the timer
-    iTimerAction = Plugin_Stop;
-    
-    // Check if the grenade is still valid
-    if (iGrenade != INVALID_ENT_REFERENCE)
-    {
-        // Decrement the grenade counter
-        if (iGrenadeCounter > 0)
-        {
-            iGrenadeCounter--;
-        }
-        
-        // Execute the grenade think function
-        switch (iGrenadeState)
-        {
-            case C_PROXIMITY_STATE_WAIT_IDLE:
-            {
-                iTimerAction = GrenadeProximityThinkWaitIdle(iGrenade, iGrenadeReference, iGrenadeState, iGrenadeCounter);
-            }
-            case C_PROXIMITY_STATE_POWERUP:
-            {
-                iTimerAction = GrenadeProximityThinkPowerUp(iGrenade, iGrenadeReference, iGrenadeState, iGrenadeCounter);
-            }
-            case C_PROXIMITY_STATE_DETECT:
-            {
-                iTimerAction = GrenadeProximityThinkDetect(iGrenade, iGrenadeReference, iGrenadeState, iGrenadeCounter);
-            }
-        }
-        
-        // Write the datapack
-        if (iTimerAction == Plugin_Continue)
-        {
-            ResetPack(hPack, true);
-            hPack.WriteCell(iGrenadeReference);
-            hPack.WriteCell(iGrenadeState);
-            hPack.WriteCell(iGrenadeCounter);
-        }
-    }
-    
-    return iTimerAction;
 }
 
 /* ------------------------------------------------------------------------- */
 /* Grenade :: Tripwire                                                       */
 /* ------------------------------------------------------------------------- */
 
-public bool OnGrenadeTripwireTraceFilterNoPlayer(int iEntity, int iContentsMask, any iData)
+public Action OnGrenadeTripwireTouch(int iGrenade, int iOther)
 {
-    return (iEntity == view_as<int>(iData) || 1 <= iEntity <= MaxClients) ? false : true;
-}
-
-stock void GrenadeTripwireTrackWall(int iGrenade)
-{
-    float vTracker[6][3] = {{ 0.0,  0.0,  5.0},
-                            { 0.0,  5.0,  0.0},
-                            { 5.0,  0.0,  0.0},
-                            { 0.0,  0.0, -5.0},
-                            { 0.0, -5.0,  0.0},
-                            {-5.0,  0.0,  0.0}};
-    
-    Handle hTrace;
-    float  vGrenadeOrigin[3];
-    float  vEndPoint[3];
-    float  vNormal[3];
-    
-    int    iIndex;
-    float  flFraction;
-    float  flBestFraction;
-    
-    // Get the grenade origin
-    GetEntPropVector(iGrenade, Prop_Send, "m_vecOrigin", vGrenadeOrigin);
-    
-    // Search the best fraction
-    flBestFraction = 1.0;
-    
-    for (iIndex = 0 ; iIndex < 6 ; iIndex++)
+    // Check if the grenade touches something
+    if (GrenadeCheckTouch(iGrenade, iOther, false))
     {
-        vEndPoint[0] = vTracker[iIndex][0] + vGrenadeOrigin[0];
-        vEndPoint[1] = vTracker[iIndex][1] + vGrenadeOrigin[1];
-        vEndPoint[2] = vTracker[iIndex][2] + vGrenadeOrigin[2];
+        float vTracker[6][3] = {{ 0.0,  0.0,  8.0},
+                                { 0.0,  8.0,  0.0},
+                                { 8.0,  0.0,  0.0},
+                                { 0.0,  0.0, -8.0},
+                                { 0.0, -8.0,  0.0},
+                                {-8.0,  0.0,  0.0}};
         
-        hTrace     = TR_TraceRayFilterEx(vGrenadeOrigin, vEndPoint, MASK_SOLID, RayType_EndPoint, OnGrenadeTripwireTraceFilterNoPlayer, iGrenade);
-        flFraction = TR_GetFraction(hTrace);
+        Handle hTrace;
+        float  vGrenadeOrigin[3];
+        float  vGrenadeEndPoint[3];
+        float  vGrenadeNormal[3];
         
-        if (flBestFraction > flFraction)
+        int    i;
+        float  flFraction;
+        float  flBestFraction;
+        
+        // Get the grenade origin
+        GetEntPropVector(iGrenade, Prop_Send, "m_vecOrigin", vGrenadeOrigin);
+        
+        // Search the best fraction
+        flBestFraction = 1.0;
+        
+        for (i = 0 ; i < 6 ; i++)
         {
-            flBestFraction = flFraction;
-            TR_GetPlaneNormal(hTrace, vNormal);
+            vGrenadeEndPoint[0] = vTracker[i][0] + vGrenadeOrigin[0];
+            vGrenadeEndPoint[1] = vTracker[i][1] + vGrenadeOrigin[1];
+            vGrenadeEndPoint[2] = vTracker[i][2] + vGrenadeOrigin[2];
+            
+            hTrace     = TR_TraceRayFilterEx(vGrenadeOrigin, vGrenadeEndPoint, MASK_SOLID, RayType_EndPoint, OnGrenadeTraceFilterNoPlayer, iGrenade);
+            flFraction = TR_GetFraction(hTrace);
+            
+            if (flBestFraction > flFraction)
+            {
+                flBestFraction = flFraction;
+                TR_GetPlaneNormal(hTrace, vGrenadeNormal);
+            }
+            
+            CloseHandle(hTrace);
         }
         
-        CloseHandle(hTrace);
-    }
-    
-    // Check if the fraction is good
-    if (flBestFraction < 1.0)
-    {
-        DataPack hPack;
-        
-        // Set the grenade think function
-        CreateDataTimer(0.1, OnGrenadeTripwireTimerThink, hPack, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-        
-        // Prepare the datapack
-        // -------------------------
-        // int   iGrenadeReference
-        // float vGrenadeNormal[3]
-        // int   iGrenadeState
-        // int   iGrenadeCounter
-        hPack.WriteCell(EntIndexToEntRef(iGrenade));
-        hPack.WriteFloat(vNormal[0]);
-        hPack.WriteFloat(vNormal[1]);
-        hPack.WriteFloat(vNormal[2]);
-        hPack.WriteCell(C_TRIPWIRE_STATE_POWERUP);
-        hPack.WriteCell(RoundFloat(gl_flCvarTripwirePowerupTime * 10.0));
-        
-        // Unhook the grenade touch function
-        SDKUnhook(iGrenade, SDKHook_TouchPost, OnGrenadeTripwireTouchPost);
-        
-        // Block the grenade
-        SetEntityMoveType(iGrenade, MOVETYPE_NONE);
-        
-        // Set the grenade breakable
-        GrenadeSetBreakable(iGrenade);
-        
-        // Hook the grenade takedamage function
-        SDKHook(iGrenade, SDKHook_OnTakeDamage, OnGrenadeTakeDamage);
-    }
-}
-
-public void OnGrenadeTripwireTouchPost(int iGrenade, int iOther)
-{
-    // Check if the grenade touches the world
-    if (!iOther)
-    {
-        // Search a wall near the grenade
-        GrenadeTripwireTrackWall(iGrenade);
-    }
-    // Check if the grenade touches a solid entity (But not a player)
-    else if ((iOther > MaxClients) && (GetEntProp(iOther, Prop_Send, "m_nSolidType", 1) && !(GetEntProp(iOther, Prop_Send, "m_usSolidFlags", 2) & 0x0004)))
-    {
-        // Search a wall near the grenade
-        GrenadeTripwireTrackWall(iGrenade);
-    }
-}
-
-stock Action GrenadeTripwireThinkPowerUp(int    iGrenade, 
-                                         int    iGrenadeReference, 
-                                         float  vGrenadeNormal[3],
-                                         int   &rGrenadeState, 
-                                         int   &rGrenadeCounter)
-{
-    // Check if the grenade is ready
-    if (rGrenadeCounter <= 0)
-    {
-        // Play a sound
-        EmitSoundToAll("buttons/blip2.wav", iGrenade, _, SNDLEVEL_CONVO);
-        
-        // Set the grenade next state
-        rGrenadeState   = C_TRIPWIRE_STATE_DETECT;
-        rGrenadeCounter = 0;
-    }
-    else if ((rGrenadeCounter % 2) == 0)
-    {
-        // Determine the pitch
-        int iPitch = 200 - rGrenadeCounter * 4;
-        
-        if (iPitch <= 100)
+        // Check if the fraction is good
+        if (flBestFraction < 1.0)
         {
-            iPitch = 100;
+            DataPack hGrenadePack;
+            
+            // Start the grenade think function
+            CreateDataTimer(0.1, OnGrenadeThink, hGrenadePack, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+            
+            // Prepare the datapack
+            // ------------------------------
+            // int iGrenadeReference
+            // int hGrenadeThinkFunction
+            // ------------------------------
+            // int iGrenadeCounter
+            // float vGrenadeNormal[3]
+            // ------------------------------
+            hGrenadePack.WriteCell(EntIndexToEntRef(iGrenade));
+            hGrenadePack.WriteFunction(OnGrenadeTripwireThink__Powerup);
+            hGrenadePack.WriteCell(RoundFloat(gl_flCvarTripwirePowerupTime * 10.0));
+            hGrenadePack.WriteFloat(vGrenadeNormal[0]);
+            hGrenadePack.WriteFloat(vGrenadeNormal[1]);
+            hGrenadePack.WriteFloat(vGrenadeNormal[2]);
+            
+            // Unhook the grenade touch function
+            SDKUnhook(iGrenade, SDKHook_TouchPost, OnGrenadeTripwireTouch);
+            
+            // Block the grenade
+            SetEntityMoveType(iGrenade, MOVETYPE_NONE);
+            
+            // Set the grenade breakable
+            GrenadeSetBreakable(iGrenade, 10);
+            
+            // Hook the grenade takedamage function
+            SDKHook(iGrenade, SDKHook_OnTakeDamage, OnGrenadeTakeDamageBlock);
         }
-        
-        // Play a sound
-        EmitSoundToAll("buttons/blip1.wav", iGrenade, _, SNDLEVEL_CONVO, _, _, iPitch);
     }
     
     return Plugin_Continue;
 }
 
-public bool OnGrenadeTripwireTraceFilter(int iEntity, int iContentsMask, any iData)
+public Action OnGrenadeTripwireThink__Powerup(int iGrenade, DataPack hGrenadePack)
 {
-    return (iEntity == view_as<int>(iData)) ? false : true;
+    static int      iGrenadeReference;
+    static Function hGrenadeThinkFunction;
+    static int      iGrenadeCounter;
+    
+    // Read the datapack
+    ResetPack(hGrenadePack);
+    iGrenadeReference     = hGrenadePack.ReadCell();
+    hGrenadeThinkFunction = hGrenadePack.ReadFunction();
+    iGrenadeCounter       = hGrenadePack.ReadCell();
+    
+    // Decrement the grenade counter
+    iGrenadeCounter--;
+    
+    // Check if the grenade is operational
+    if (iGrenadeCounter <= 0)
+    {
+        // Play a sound
+        EmitSoundToAll("buttons/blip2.wav", iGrenade, _, SNDLEVEL_CONVO, _, 0.9);
+        
+        // Set the grenade think function
+        hGrenadeThinkFunction = OnGrenadeTripwireThink__Operational;
+    }
+    else if ((iGrenadeCounter % 2) == 0)
+    {
+        // Play a sound
+        EmitSoundToAll("buttons/blip1.wav", iGrenade, _, SNDLEVEL_CONVO, _, 0.9);
+    }
+    
+    // Write the datapack
+    ResetPack(hGrenadePack);
+    hGrenadePack.WriteCell(iGrenadeReference);
+    hGrenadePack.WriteFunction(hGrenadeThinkFunction);
+    hGrenadePack.WriteCell(iGrenadeCounter);
+    
+    // Continue the timer
+    return Plugin_Continue;
 }
 
-stock Action GrenadeTripwireThinkDetect(int    iGrenade, 
-                                        int    iGrenadeReference, 
-                                        float  vGrenadeNormal[3],
-                                        int   &rGrenadeState, 
-                                        int   &rGrenadeCounter)
+public Action OnGrenadeTripwireThink__Operational(int iGrenade, DataPack hGrenadePack)
 {
-    static int iOwner;
+    static int      iGrenadeReference;
+    static Function hGrenadeThinkFunction;
+    static int      iGrenadeCounter;
+    static float    vGrenadeNormal[3];
+    static int      iGrenadeOwner;
+    
+    // Read the datapack
+    ResetPack(hGrenadePack);
+    iGrenadeReference     = hGrenadePack.ReadCell();
+    hGrenadeThinkFunction = hGrenadePack.ReadFunction();
+    iGrenadeCounter       = hGrenadePack.ReadCell();
+    vGrenadeNormal[0]     = hGrenadePack.ReadFloat();
+    vGrenadeNormal[1]     = hGrenadePack.ReadFloat();
+    vGrenadeNormal[2]     = hGrenadePack.ReadFloat();
     
     // Get the grenade owner
-    iOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
+    iGrenadeOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
     
     // Check if the owner is still connected
-    if (1 <= iOwner <= MaxClients)
+    if (1 <= iGrenadeOwner <= MaxClients)
     {
-        static int    iOwnerTeam;
+        static int    iGrenadeTeam;
+        static Handle hTrace;
         static float  vGrenadeOrigin[3];
         static float  vGrenadeEndPoint[3];
-        static Handle hTrace;
         static int    iEntityHit;
-        static bool   bDetonate;
-        
-        // Get the owner team
-        iOwnerTeam = GetClientTeam(iOwner);
+
+        // Get the grenade team
+        iGrenadeTeam = GetClientTeam(iGrenadeOwner);
         
         // Get the grenade origin
         GetEntPropVector(iGrenade, Prop_Send, "m_vecOrigin", vGrenadeOrigin);
-        
-        // Initialize the context
-        bDetonate = false;
         
         // Check if there's a valid player in the grenade tripwire
         vGrenadeEndPoint[0] = vGrenadeNormal[0] * 8192.0 + vGrenadeOrigin[0];
         vGrenadeEndPoint[1] = vGrenadeNormal[1] * 8192.0 + vGrenadeOrigin[1];
         vGrenadeEndPoint[2] = vGrenadeNormal[2] * 8192.0 + vGrenadeOrigin[2];
         
-        hTrace = TR_TraceRayFilterEx(vGrenadeOrigin, vGrenadeEndPoint, MASK_SOLID, RayType_EndPoint, OnGrenadeTripwireTraceFilter, iGrenade);
+        hTrace = TR_TraceRayFilterEx(vGrenadeOrigin, vGrenadeEndPoint, MASK_SOLID, RayType_EndPoint, OnGrenadeTraceFilter, iGrenade);
         
         if (TR_GetFraction(hTrace) < 1.0)
         {
             TR_GetEndPosition(vGrenadeEndPoint, hTrace);
             iEntityHit = TR_GetEntityIndex(hTrace);
             
-            if ((1 <= iEntityHit <= MaxClients) && (IsPlayerAlive(iEntityHit)) && (GetClientTeam(iEntityHit) != iOwnerTeam))
+            if ((1 <= iEntityHit <= MaxClients) && (IsPlayerAlive(iEntityHit)) && (GetClientTeam(iEntityHit) != iGrenadeTeam))
             {
-                bDetonate = true;
+                // Detonate the grenade
+                GrenadeDetonate(iGrenade);
+                    
+                // Stop the timer
+                return Plugin_Stop;
             }
         }
         
         CloseHandle(hTrace);
         
-        // Check if the grenade must detonate
-        if (bDetonate)
-        {
-            CreateTimer(0.1, OnGrenadeTimerDetonate, iGrenadeReference, TIMER_FLAG_NO_MAPCHANGE);
-            return Plugin_Stop;
-        }
+        // Decrement the grenade counter
+        iGrenadeCounter--;
         
-        // Warn the players
-        if (rGrenadeCounter <= 0)
+        // Check if the players must be warned
+        if (iGrenadeCounter <= 0)
         {
             static int iPlayers[MAXPLAYERS + 1];
             static int iNbPlayers;
@@ -1006,21 +1004,11 @@ stock Action GrenadeTripwireThinkDetect(int    iGrenade,
             // Send the beam effect to all the close players
             for (iNumPlayer = 0 ; iNumPlayer < iNbPlayers ; iNumPlayer++)
             {
+                // Cache the player index
                 iPlayer = iPlayers[iNumPlayer];
                 
-                // Determine the color of the beam
-                if (iPlayer == iOwner)
-                {
-                    iColor = gl_iCvarEffectsSelfColor;
-                }
-                else if (GetClientTeam(iPlayer) == iOwnerTeam)
-                {
-                    iColor = gl_iCvarEffectsTeammateColor;
-                }
-                else
-                {
-                    iColor = gl_iCvarEffectsEnemyColor;
-                }
+                // Get the color effect
+                iColor = PlayerGetEffectColor(iPlayer, iGrenadeOwner, iGrenadeTeam);
                 
                 // Create the beam effect
                 TE_Start      ("BeamEntPoint");
@@ -1044,74 +1032,60 @@ stock Action GrenadeTripwireThinkDetect(int    iGrenade,
                 TE_SendToClient(iPlayer);
             }
             
-            rGrenadeCounter = 1; // 0.1 sec
+            // Set the grenade counter
+            iGrenadeCounter = 1;
         }
     }
     else
     {
-        // Detonate the grenade
-        CreateTimer(GetRandomFloat(0.5, 2.0), OnGrenadeTimerDetonate, iGrenadeReference, TIMER_FLAG_NO_MAPCHANGE);
+        // Kill the grenade
+        AcceptEntityInput(iGrenade, "kill");
+        
+        // Stop the timer
         return Plugin_Stop;
     }
     
+    // Write the datapack
+    ResetPack(hGrenadePack);
+    hGrenadePack.WriteCell(iGrenadeReference);
+    hGrenadePack.WriteFunction(hGrenadeThinkFunction);
+    hGrenadePack.WriteCell(iGrenadeCounter);
+    hGrenadePack.WriteFloat(vGrenadeNormal[0]);
+    hGrenadePack.WriteFloat(vGrenadeNormal[1]);
+    hGrenadePack.WriteFloat(vGrenadeNormal[2]);
+    
+    // Continue the timer
     return Plugin_Continue;
 }
 
-public Action OnGrenadeTripwireTimerThink(Handle hTimer, DataPack hPack)
+/* ------------------------------------------------------------------------- */
+/* Grenade :: Thinker                                                        */
+/* ------------------------------------------------------------------------- */
+
+public Action OnGrenadeThink(Handle hTimer, DataPack hGrenadePack)
 {
-    static int    iGrenadeReference;
-    static int    iGrenade;
-    static float  vGrenadeNormal[3];
-    static int    iGrenadeState;
-    static int    iGrenadeCounter;
-    static Action iTimerAction;
+    static Action   iTimerAction;
+    static int      iGrenade;
+    static Function hGrenadeThinkFunction;
     
     // Read the datapack
-    ResetPack(hPack);
-    iGrenadeReference = hPack.ReadCell();
-    iGrenade          = EntRefToEntIndex(iGrenadeReference);
-    vGrenadeNormal[0] = hPack.ReadFloat();
-    vGrenadeNormal[1] = hPack.ReadFloat();
-    vGrenadeNormal[2] = hPack.ReadFloat();
-    iGrenadeState     = hPack.ReadCell();
-    iGrenadeCounter   = hPack.ReadCell();
-
-    // By default, exit the timer
-    iTimerAction = Plugin_Stop;
+    ResetPack(hGrenadePack);
+    iGrenade              = EntRefToEntIndex(hGrenadePack.ReadCell());
+    hGrenadeThinkFunction = hGrenadePack.ReadFunction();
     
     // Check if the grenade is still valid
     if (iGrenade != INVALID_ENT_REFERENCE)
     {
-        // Decrement the grenade counter
-        if (iGrenadeCounter > 0)
-        {
-            iGrenadeCounter--;
-        }
-        
-        // Execute the grenade think function
-        switch (iGrenadeState)
-        {
-            case C_TRIPWIRE_STATE_POWERUP:
-            {
-                iTimerAction = GrenadeTripwireThinkPowerUp(iGrenade, iGrenadeReference, vGrenadeNormal, iGrenadeState, iGrenadeCounter);
-            }
-            case C_TRIPWIRE_STATE_DETECT:
-            {
-                iTimerAction = GrenadeTripwireThinkDetect(iGrenade, iGrenadeReference, vGrenadeNormal, iGrenadeState, iGrenadeCounter);
-            }
-        }
-        
-        // Write the datapack
-        if (iTimerAction == Plugin_Continue)
-        {
-            ResetPack(hPack, true);
-            hPack.WriteCell(EntIndexToEntRef(iGrenade));
-            hPack.WriteFloat(vGrenadeNormal[0]);
-            hPack.WriteFloat(vGrenadeNormal[1]);
-            hPack.WriteFloat(vGrenadeNormal[2]);
-            hPack.WriteCell(iGrenadeState);
-            hPack.WriteCell(iGrenadeCounter);
-        }
+        // Call the grenade think function
+        Call_StartFunction(INVALID_HANDLE, hGrenadeThinkFunction);
+        Call_PushCell(iGrenade);
+        Call_PushCell(hGrenadePack);
+        Call_Finish(iTimerAction);
+    }
+    else
+    {
+        // Stop the timer
+        iTimerAction = Plugin_Stop;
     }
     
     return iTimerAction;
