@@ -16,12 +16,10 @@
 /* ========================================================================= */
 
 /* Plugin version                                                            */
-#define C_PLUGIN_VERSION                "1.1.1"
+#define C_PLUGIN_VERSION                "1.1.2"
 
 /* ------------------------------------------------------------------------- */
 
-/* No grenade type (Assault rifle, knife..)                                  */
-#define C_GRENADE_TYPE_NONE             (-1)
 /* High explosive grenade type                                               */
 #define C_GRENADE_TYPE_HE               (0)
 /* Flashbang grenade type                                                    */
@@ -32,7 +30,7 @@
 #define C_GRENADE_TYPE_DECOY            (3)
 /* Tactical awareness grenade type                                           */
 #define C_GRENADE_TYPE_TA               (4)
-/* Incendiary grenade type                                                   */
+/* Incendiary (+ molotov) grenade type                                       */
 #define C_GRENADE_TYPE_INCENDIARY       (5)
 /* Maximum grenade type                                                      */
 #define C_GRENADE_TYPE_MAXIMUM          (6)
@@ -118,10 +116,6 @@ int gl_iGrenadeModeLimits[C_GRENADE_TYPE_MAXIMUM] =
 /* Plugin late loading                                                       */
 bool      gl_bPluginLateLoading;
 
-/* Players in game                                                           */
-bool      gl_bPlayerInGame     [MAXPLAYERS + 1];
-/* Players current grenade type                                              */
-int       gl_iPlayerGrenadeType[MAXPLAYERS + 1];
 /* Players mode for each grenade type                                        */
 int       gl_iPlayerGrenadeMode[MAXPLAYERS + 1][C_GRENADE_TYPE_MAXIMUM];
 
@@ -228,13 +222,6 @@ void PluginStartLate()
         {
             // Call the client connected forward
             OnClientConnected(iPlayer);
-                
-            // Check if the player is in game
-            if (IsClientInGame(iPlayer))
-            {
-                // Call the client put in server forward
-                OnClientPutInServer(iPlayer);
-            }
         }
     }
 }
@@ -307,9 +294,6 @@ public void OnCvarChanged(ConVar hCvar, const char[] szOldValue, const char[] sz
 public void OnClientConnected(int iClient)
 {
     // Initialize the client data
-    gl_bPlayerInGame     [iClient] = false;
-    gl_iPlayerGrenadeType[iClient] = C_GRENADE_TYPE_NONE;
-    
     gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_HE]         = C_GRENADE_MODE_NORMAL;
     gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_FLASHBANG]  = C_GRENADE_MODE_NORMAL;
     gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_SMOKE]      = C_GRENADE_MODE_NORMAL;
@@ -318,62 +302,28 @@ public void OnClientConnected(int iClient)
     gl_iPlayerGrenadeMode[iClient][C_GRENADE_TYPE_INCENDIARY] = C_GRENADE_MODE_NORMAL;
 }
 
-public void OnClientPutInServer(int iClient)
-{
-    // Set the client as in game
-    gl_bPlayerInGame[iClient] = true;
-    
-    // Hook the client weapon switch function
-    SDKHook(iClient, SDKHook_WeaponSwitch, OnPlayerWeaponSwitch);
-}
-
-public void OnClientDisconnect(int iClient)
-{
-    // Clear the client data
-    gl_bPlayerInGame     [iClient] = false;
-    gl_iPlayerGrenadeType[iClient] = C_GRENADE_TYPE_NONE;
-}
-
 /* ------------------------------------------------------------------------- */
 /* Player                                                                    */
 /* ------------------------------------------------------------------------- */
-
-public Action OnPlayerWeaponSwitch(int iPlayer, int iWeapon)
-{
-    static char szClassname[32];
-    static int  iGrenadeType;
-    
-    // Get the weapon classname
-    GetEdictClassname(iWeapon, szClassname, sizeof(szClassname));
-    
-    // Check if the weapon is a grenade
-    if (gl_hGrenadeWeaponName.GetValue(szClassname, iGrenadeType))
-    {
-        gl_iPlayerGrenadeType[iPlayer] = iGrenadeType;
-    }
-    else
-    {
-        gl_iPlayerGrenadeType[iPlayer] = C_GRENADE_TYPE_NONE;
-    }
-    
-    return Plugin_Continue;
-}
 
 public Action OnPlayerLookAtWeapon(int iPlayer, const char[] szCommand, int iArgc)
 {
     // Check if the plugin is enabled
     if (gl_bCvarPluginEnable)
     {
-        // Check if the player is alive
-        if (gl_bPlayerInGame[iPlayer] && IsPlayerAlive(iPlayer))
+        // Check if the player is in game and alive
+        if (IsClientInGame(iPlayer) && IsPlayerAlive(iPlayer))
         {
-            // Cache the grenade type
-            int iGrenadeType = gl_iPlayerGrenadeType[iPlayer];
+            char szClassname[32];
+            int  iGrenadeType;
             
-            // Check if the current player weapon is a grenade
-            if (iGrenadeType != C_GRENADE_TYPE_NONE)
+            // Get the player weapon
+            GetClientWeapon(iPlayer, szClassname, sizeof(szClassname));
+            
+            // Check if the weapon is a grenade
+            if (gl_hGrenadeWeaponName.GetValue(szClassname, iGrenadeType))
             {
-                /* Cache the grenade mode */
+                // Cache the grenade mode
                 int iGrenadeMode = gl_iPlayerGrenadeMode[iPlayer][iGrenadeType];
                 
                 // Go to the next grenade mode
