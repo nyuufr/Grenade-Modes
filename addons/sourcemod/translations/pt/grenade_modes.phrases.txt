@@ -1,0 +1,72 @@
+"Phrases"
+{
+	"TGrenade"
+	{
+		"pt"	"Granada"
+	}
+	"TExplosive"
+	{
+		"pt"	"Explosiva"
+	}
+	"TFlashbang"
+	{
+		"pt"	"Flashbang"
+	}
+	"TSmoke"
+	{
+		"pt"	"Fumaça"
+	}
+	"TDecoy"
+	{
+		"pt"	"Decoy"
+	}
+	"TTactical"
+	{
+		"pt"	"Tática"
+	}
+	"TIncptdiary"
+	{
+		"pt"	"Incendiária"
+	}
+	"TMolotov"
+	{
+		"pt"	"Molotov"
+	}
+
+	"TMode"
+	{
+		"pt"	"Modo"
+	}
+	"TNormal"
+	{
+		"pt"	"Normal"
+	}
+	"TImpact"
+	{
+		"pt"	"Impacto"
+	}
+	"TProximity"
+	{
+		"pt"	"Proximidade"
+	}
+	"TTripwire"
+	{
+		"pt"	"Tripwire"
+	}
+	"TMotionSensor"
+	{
+		"pt"	"Sensor de movimento"
+	}
+	"TSatchelCharge"
+	{
+		"pt"	"Carga de mochila"
+	}
+	"THoming"
+	{
+		"pt"	"Homing"
+	}
+	"TCeilingTrap"
+	{
+		"pt"	"Armadilha da teto"
+	}
+}
