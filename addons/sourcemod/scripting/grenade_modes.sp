@@ -16,7 +16,7 @@
 /* ========================================================================= */
 
 /* Plugin version                                                            */
-#define C_PLUGIN_VERSION                "1.1.0"
+#define C_PLUGIN_VERSION                "1.1.1"
 
 /* ------------------------------------------------------------------------- */
 
@@ -103,12 +103,12 @@ char gl_szGrenadeModeNameTr[C_GRENADE_MODE_MAXIMUM][] =
 /* Grenade mode limits                                                       */
 int gl_iGrenadeModeLimits[C_GRENADE_TYPE_MAXIMUM] = 
 {
-    C_GRENADE_MODE_MAXIMUM, // HE
-    C_GRENADE_MODE_MAXIMUM, // FLASHBANG
-    C_GRENADE_MODE_MAXIMUM, // SMOKE
-    C_GRENADE_MODE_IMPACT,  // DECOY
-    C_GRENADE_MODE_IMPACT,  // TA
-    C_GRENADE_MODE_IMPACT   // INCENDIARY + MOLOTOV
+    C_GRENADE_MODE_MAXIMUM,   // HE
+    C_GRENADE_MODE_MAXIMUM,   // FLASHBANG
+    C_GRENADE_MODE_MAXIMUM,   // SMOKE
+    C_GRENADE_MODE_IMPACT,    // DECOY
+    C_GRENADE_MODE_IMPACT,    // TA
+    C_GRENADE_MODE_PROXIMITY  // INCENDIARY + MOLOTOV
 };
 
 /* ========================================================================= */
@@ -204,6 +204,9 @@ public void OnPluginStart()
     gl_hGrenadeProjectileName.SetValue("hegrenade_projectile",    C_GRENADE_TYPE_HE);
     gl_hGrenadeProjectileName.SetValue("flashbang_projectile",    C_GRENADE_TYPE_FLASHBANG);
     gl_hGrenadeProjectileName.SetValue("smokegrenade_projectile", C_GRENADE_TYPE_SMOKE);
+    gl_hGrenadeProjectileName.SetValue("decoy_projectile",        C_GRENADE_TYPE_DECOY);
+    gl_hGrenadeProjectileName.SetValue("tagrenade_projectile",    C_GRENADE_TYPE_TA);
+    gl_hGrenadeProjectileName.SetValue("molotov_projectile",      C_GRENADE_TYPE_INCENDIARY);
     
     // Hook the player command +lookatweapon
     AddCommandListener(OnPlayerLookAtWeapon, "+lookatweapon");
